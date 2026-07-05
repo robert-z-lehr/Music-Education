@@ -9,35 +9,8 @@
 // Create a global variable named 'VF' to store the VexFlow namespace after loading the library
 let VF;
 
-// Import necessary classes from the VexFlow library.
-const { Renderer, TickContext, Stave, StaveNote, Accidental } = Vex.Flow;
-
-// Select the HTML div element where the music notation will be rendered.
-const div = document.getElementById("output");
-
-// Initialize the renderer for the SVG format.
-const renderer = new Renderer(div, Renderer.Backends.SVG);
-
-// (Configure) Set the size of the SVG canvas where the music notation will appear.
-renderer.resize(1560, 1000);
-
-// Get the context of the renderer, which is necessary for drawing.
-const context = renderer.getContext();
-
-// Initialize a TickContext, which is necessary for managing the timing and positioning of notes.
-const tickContext = new TickContext();
-
-// Change 'const' to 'let' to allow reassignment
-let stave = new Stave(10, 10, 1550).addClef("treble");
-
-// Draw the stave on the SVG canvas.
-stave.setContext(context).draw();
-
 // Define an array of possible note durations.
 const durations = ["8", "4", "2", "1"];
-
-// Define an array of clefs
-const clefs = ['treble', 'bass'];
 
 // Generate an array of note configurations, each with a note letter, accidental, and octave.
 // For each note configuration, create a StaveNote object.
@@ -91,11 +64,6 @@ const bassNotes = [
     ["g", "b", "3"],
     ["g", "#", "3"]
 ];
-// Prepare the TickContext for formatting by calculating the positions of tickables (notes).
-tickContext.preFormat().setX(1540);  // Adjust to a value close to the end of your new stave width
-
-// This array will hold groups of SVG elements that represent notes currently displayed on the stave.
-const visibleNoteGroups = [];
 
 // Initialize VexFlow
 window.onload = function() {
@@ -111,57 +79,6 @@ window.onload = function() {
 function main() { // Main function to start the application
     // Start loading VexFlow immediately, not waiting for DOM content to load
     loadVexFlowScript();
-
-    // Attach event listeners and other initializations that depend on the DOM being loaded
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // Initialize UI components and other elements that need the DOM
-        setUpDownloadButtons();
-        renderSheetMusic(); // Make sure to render the sheet music once everything is loaded
-
-        // TESTING - START
-        // New functionality added here
-        const VF = Vex.Flow;
-        const musicContainer = document.getElementById("music-container");
-
-        // Define the number of lines and measures per line
-        const numberOfLines = 4;
-        const measuresPerLine = 4;
-        const measureWidth = 250;
-
-        for (let i = 0; i < numberOfLines; i++) {
-            const div = document.createElement('div');
-            div.classList.add('stave-line');
-            musicContainer.appendChild(div);
-
-            const renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-            renderer.resize(measuresPerLine * measureWidth, 150);
-            const context = renderer.getContext();
-
-            let startX = 10;
-            for (let j = 0; j < measuresPerLine; j++) {
-                const stave = new VF.Stave(startX, 0, measureWidth);
-                if (j === 0) {
-                    stave.addClef("treble").addTimeSignature("4/4");
-                }
-                stave.setContext(context).draw();
-
-                const notes = [
-                    new VF.StaveNote({ keys: ["c/4"], duration: "q" }),
-                    new VF.StaveNote({ keys: ["d/4"], duration: "q" }),
-                    new VF.StaveNote({ keys: ["e/4"], duration: "q" }),
-                    new VF.StaveNote({ keys: ["f/4"], duration: "q" })
-                ];
-
-                const voice = new VF.Voice({num_beats: 4, beat_value: 4});
-                voice.addTickables(notes);
-                new VF.Formatter().joinVoices([voice]).format([voice], 200);
-                voice.draw(context, stave);
-
-                startX += measureWidth;
-            }
-        } // TESTING - END
-    });
 }
 
 // LOAD VEXFLOW LIBRARY FUNCTION | LOAD VEXFLOW LIBRARY FUNCTION | LOAD VEXFLOW LIBRARY FUNCTION | LOAD VEXFLOW LIBRARY FUNCTION |
@@ -185,6 +102,15 @@ function initializeMusicTheoryQuestions() { // Function to initialize all music 
     generateClefQuestion(); // TBD
     generateChordQuestion(); // TBD
     // Initialize more questions here...
+
+    createScrollingNoteAnimation(document.getElementById('trebleScrollingNote'), {
+        clef: 'treble',
+        notes: trebleNotes
+    });
+    createScrollingNoteAnimation(document.getElementById('bassScrollingNote'), {
+        clef: 'bass',
+        notes: bassNotes
+    });
 }
 
 // SINGLE NOTE UPDATED FUNCTION | SINGLE NOTE UPDATED FUNCTION | SINGLE NOTE UPDATED FUNCTION | SINGLE NOTE UPDATED FUNCTION |
@@ -241,12 +167,13 @@ function generateSingleNoteQuestion() {
     const selectedNote = notes[Math.floor(Math.random() * notes.length)];
     const selectedDuration = durations[Math.floor(Math.random() * durations.length)];
 
-    // Stem direction is intentionally omitted: VexFlow auto-computes the correct
-    // direction from the note's staff position (down at/above the middle line,
-    // up below it), same as addNote()/getRandomNote() elsewhere in this file.
+    // auto_stem: true makes VexFlow actually run its own stem-direction
+    // calculation (down at/above the middle line, up below it). Without this
+    // flag VexFlow silently defaults every note to an upward stem.
     const note = new VF.StaveNote({
         keys: [selectedNote],
-        duration: selectedDuration
+        duration: selectedDuration,
+        auto_stem: true
     });
 
     // Add accidental if needed
@@ -325,7 +252,8 @@ function generateRhythmQuestion() {
     // Generate and draw notes based on the selected rhythm pattern
     const notes = selectedPattern.map(duration => new VF.StaveNote({
         keys: ["b/4"],
-        duration: duration
+        duration: duration,
+        auto_stem: true
     }));
     const beams = VF.Beam.generateBeams(notes.filter(note => note.duration !== "q" && note.duration !== "h" && note.duration !== "w"));
     VF.Formatter.FormatAndDraw(context, stave, notes);
@@ -461,106 +389,110 @@ function generateAccidentalQuestion() { // Logic for generating a new articulati
 function generateChordQuestion() { // Logic for generating a new chord question
 }
 
-// EVENT LISTENERS SET UP FOR DONWLOAD BUTTONS FUNCTION | EVENT LISTENERS SET UP FOR DONWLOAD BUTTONS FUNCTION |
-function setUpDownloadButtons() { // Function to set up event listeners for download buttons
-    document.getElementById('downloadPdfBtn').addEventListener('click', downloadAsPDF);
-    document.getElementById('downloadAsPngBtn').addEventListener('click', downloadAsPNG);
-}
+// SCROLLING NOTE ANIMATION FACTORY | SCROLLING NOTE ANIMATION FACTORY | SCROLLING NOTE ANIMATION FACTORY |
+// Builds a self-contained scrolling-note-animation instance (its own stave,
+// renderer, controls, and note-group state) into `container`, parameterized
+// by clef so the same logic drives both a treble-only and a bass-only
+// instance instead of duplicating it.
+function createScrollingNoteAnimation(container, { clef, notes }) {
+    container.innerHTML = '';
 
-// DOWNLOAD AS PDF FUNCTION | DOWNLOAD AS PDF FUNCTION | DOWNLOAD AS PDF FUNCTION | DOWNLOAD AS PDF FUNCTION | DOWNLOAD AS PDF FUNCTION |
-function downloadAsPDF() { // Function to download the rendered sheet music as PDF
-    html2canvas(document.getElementById('sheetMusicContainer')).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        // Access jsPDF from a namespaced property under window
-        const pdf = new window.jspdf.jsPDF(); 
-        pdf.addImage(imgData, 'PNG', 10, 10);
-        pdf.save('sheet-music.pdf');
-    });
-}
+    const heading = document.createElement('h3');
+    heading.textContent = clef === 'treble' ? 'Treble Clef' : 'Bass Clef';
+    container.appendChild(heading);
 
-// DOWNLOAD AS PNG FUNCTION | DOWNLOAD AS PNG FUNCTION | DOWNLOAD AS PNG FUNCTION | DOWNLOAD AS PNG FUNCTION | DOWNLOAD AS PNG FUNCTION |
-function downloadAsPNG() { // Function to download the rendered sheet music as PNG
-    html2canvas(document.getElementById('sheetMusicContainer')).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'sheet-music.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-}
+    const animationContainer = document.createElement('div');
+    animationContainer.classList.add('animation-container');
+    const outputDiv = document.createElement('div');
+    animationContainer.appendChild(outputDiv);
+    container.appendChild(animationContainer);
 
-// HANDLE CLEF CHANGE FUNCTION | HANDLE CLEF CHANGE FUNCTION | HANDLE CLEF CHANGE FUNCTION | HANDLE CLEF CHANGE FUNCTION |
-function handleClefChange() { // Listens for clef changes and redraw stave if needed
-    const currentTime = new Date().getTime();
-    if (currentTime % 2 === 0) {
-        const newClef = stave.clef === "treble" ? "bass" : "treble";
-        stave.setClef(newClef);
-        context.clear();  // Clear the existing drawing
-        stave.setContext(context).draw();
-        console.log(`Clef changed to ${newClef}`);
-    }
-}
+    const controlsDiv = document.createElement('div');
+    controlsDiv.classList.add('controls');
+    container.appendChild(controlsDiv);
 
-// RETRIEVE A RANDOM NOTE FUNCTION | RETRIEVE A RANDOM NOTE FUNCTION | RETRIEVE A RANDOM NOTE FUNCTION | RETRIEVE A RANDOM NOTE FUNCTION |
-function getRandomNote() { // Function to get a random note from the appropriate range
-    let noteArray = stave.clef === "treble" ? trebleNotes : bassNotes;
-    const noteIndex = Math.floor(Math.random() * noteArray.length);
-    const note = noteArray[noteIndex];
-    const duration = durations[Math.floor(Math.random() * durations.length)];
-    return new StaveNote({
-        clef: stave.clef,
-        keys: [note],
-        duration: duration.toString()
-    });
-}
+    const addNoteBtn = document.createElement('button');
+    addNoteBtn.textContent = 'Add Note';
+    const rightAnswerBtn = document.createElement('button');
+    rightAnswerBtn.textContent = 'Right Answer';
+    const wrongAnswerBtn = document.createElement('button');
+    wrongAnswerBtn.textContent = 'Wrong Answer';
+    const tooSlowBtn = document.createElement('button');
+    tooSlowBtn.textContent = 'Too Slow';
+    [addNoteBtn, rightAnswerBtn, wrongAnswerBtn, tooSlowBtn].forEach(btn => controlsDiv.appendChild(btn));
 
-// ADD NOTE FUNCTION | ADD NOTE FUNCTION | ADD NOTE FUNCTION | ADD NOTE FUNCTION | ADD NOTE FUNCTION | ADD NOTE FUNCTION | ADD NOTE FUNCTION |
-function addNote() { // Update the addNote function to use this new method
-    console.log("Attempting to add a note...");
-    let notesArray = stave.clef === "treble" ? trebleNotes : bassNotes;
+    const renderer = new VF.Renderer(outputDiv, VF.Renderer.Backends.SVG);
+    renderer.resize(1560, 1000);
+    const context = renderer.getContext();
+    const tickContext = new VF.TickContext();
+    const stave = new VF.Stave(10, 10, 1550).addClef(clef);
+    stave.setContext(context).draw();
+    tickContext.preFormat().setX(1540);
 
-    if (notesArray.length === 0) {
-        console.log("No more notes available.");
-        return;
-    }
+    const visibleNoteGroups = [];
 
-    const randomIndex = Math.floor(Math.random() * notesArray.length);
-    const [letter, accidental, octave] = notesArray[randomIndex];
+    function addNote() {
+        const randomIndex = Math.floor(Math.random() * notes.length);
+        const [letter, accidental, octave] = notes[randomIndex];
+        const duration = durations[Math.floor(Math.random() * durations.length)];
 
-    const duration = durations[Math.floor(Math.random() * durations.length)];
-    console.log(`Creating note: ${letter}${accidental}/${octave} with duration: ${duration}`);
+        const note = new VF.StaveNote({
+            clef,
+            keys: [`${letter}${accidental}/${octave}`],
+            duration: duration,
+            auto_stem: true
+        });
 
-    const note = new StaveNote({
-        clef: stave.clef,
-        keys: [`${letter}${accidental}/${octave}`],
-        duration: duration
-    });
+        if (accidental) {
+            note.addAccidental(0, new VF.Accidental(accidental));
+        }
 
-    if (accidental) {
-        note.addAccidental(0, new Accidental(accidental));
+        tickContext.addTickable(note).preFormat().setX(1540);
+
+        const noteGroup = context.openGroup();
+        note.setContext(context).setStave(stave).draw();
+        context.closeGroup();
+
+        window.getComputedStyle(noteGroup).transform;
+        noteGroup.classList.add("scroll");
+
+        setTimeout(() => {
+            noteGroup.classList.add("scrolling");
+        }, 100); // Ensures CSS catches up to start transition
+
+        visibleNoteGroups.push(noteGroup);
     }
 
-    tickContext.addTickable(note).preFormat().setX(1540);
-    console.log("TickContext formatted and note added.");
+    function animateAnswer(className, translateY) {
+        if (visibleNoteGroups.length === 0) return;
 
-    const noteGroup = context.openGroup();
-    note.setContext(context).setStave(stave).draw();
-    context.closeGroup();
-    console.log("Note drawn on stave.");
+        const group = visibleNoteGroups.shift();
+        group.classList.add(className);
 
-    // Start off-screen to the right within the visible container
-    // noteGroup.style.transform = 'translateX(0px)';
-    window.getComputedStyle(noteGroup).transform;
-    console.log("Initial transform applied.");
-    noteGroup.classList.add("scroll");
+        // Force a reflow to ensure the transform applies immediately
+        window.getComputedStyle(group).transform;
 
-    // Allow the transition to start smoothly
-    setTimeout(() => {
-        noteGroup.classList.add("scrolling");
-        console.log("Scrolling class added, animation should start.");
-    }, 100);  // Ensures CSS catches up to start transition
+        const transformMatrix = window.getComputedStyle(group).transform;
+        const x = transformMatrix.split(",")[4].trim();
+        group.style.transform = `translate(${x}px, ${translateY}px)`;
+    }
 
-    visibleNoteGroups.push(noteGroup);
-    console.log("Note group added to visible groups.");
+    addNoteBtn.addEventListener('click', () => {
+        animationContainer.style.borderColor = 'black';
+        addNote();
+    });
+    rightAnswerBtn.addEventListener('click', () => {
+        animationContainer.style.borderColor = 'green';
+        animateAnswer('correct', -800);
+    });
+    wrongAnswerBtn.addEventListener('click', () => {
+        animationContainer.style.borderColor = 'red';
+        animateAnswer('incorrect', 800);
+    });
+    tooSlowBtn.addEventListener('click', () => {
+        animationContainer.style.borderColor = 'purple';
+        animateAnswer('too-slow', 0);
+    });
 }
 
 // CLEAR AND RENDER CONTENT FUNCTION | CLEAR AND RENDER CONTENT FUNCTION | CLEAR AND RENDER CONTENT FUNCTION | CLEAR AND RENDER CONTENT FUNCTION |
@@ -592,169 +524,5 @@ function appendQuestionLabel(div, labelText) { // Function to append a question 
     div.insertAdjacentHTML('beforeend', `<p>${labelText}</p>`);
 }
 
-// RENDER SHEET MUSIC FUNCTION | RENDER SHEET MUSIC FUNCTION | RENDER SHEET MUSIC FUNCTION | RENDER SHEET MUSIC FUNCTION |
-function renderSheetMusic() { // Function to render sheet music using VexFlow
-    
-    const div = document.getElementById('sheetMusicContainer');
-    div.innerHTML = ''; // Clear existing content
-
-    // Create a container for the label
-    const controlsContainer = document.createElement('div');
-    div.appendChild(controlsContainer); // Append the container to the main div
-
-    // Create and append the question label above everything
-    const label = document.createElement('p');
-    label.textContent = 'View downloadable sheet music:';
-    controlsContainer.appendChild(label);
-
-    // Create and append the button
-    const button = document.createElement('button');
-    button.textContent = 'Generate Sheet Music';
-    button.addEventListener('click', generateSingleNoteQuestion);
-    controlsContainer.appendChild(button);
-
-    const VF = Vex.Flow;
-    const width = 500; // Width of each stave
-    const heightPerStave = 150; // Height per stave, adjust as needed
-    const numberOfStaves = 4; // Total number of staves
-    const measuresPerStave = 2; // Number of measures per stave
-
-    div.style.width = `${width}px`;
-    div.style.height = `${heightPerStave * numberOfStaves}px`;
-    div.style.overflowY = 'auto';
-
-    let staveYPosition = 10; // Initial Y position for the first stave
-
-    for (let i = 0; i < numberOfStaves; i++) {
-        const renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-        renderer.resize(width, heightPerStave);
-        const context = renderer.getContext();
-
-        for (let j = 0; j < measuresPerStave; j++) {
-            const staveXPosition = 10 + (width / measuresPerStave) * j;
-            const staveWidth = width / measuresPerStave - 20; // Leave some margin on each side
-            const stave = new VF.Stave(staveXPosition, staveYPosition, staveWidth);
-
-            if (i === 0 && j === 0) {
-                stave.addClef('treble');
-            }
-            stave.setContext(context).draw();
-
-            // Create notes for the measure
-            const notes = [
-                new VF.StaveNote({ keys: ['d/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['f#/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['g/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['a/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['b/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['a/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['g/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['f#/5'], duration: '16' }),
-                // Repeat the pattern to fill the measure
-                new VF.StaveNote({ keys: ['d/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['f#/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['g/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['a/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['b/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['a/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['g/5'], duration: '16' }),
-                new VF.StaveNote({ keys: ['f#/5'], duration: '16' })
-            ];
-
-            // Create beams for the 16th notes
-            const beams = VF.Beam.generateBeams(notes);
-
-            // Create a voice and add notes
-            const voice = new VF.Voice({num_beats: 4, beat_value: 4});
-            voice.addTickables(notes);
-
-            // Format and draw the voice
-            new VF.Formatter().joinVoices([voice]).format([voice], staveWidth);
-            voice.draw(context, stave);
-
-            // Draw beams
-            beams.forEach(beam => beam.setContext(context).draw());
-        }
-
-        staveYPosition += heightPerStave; // Move down for the next set of staves
-    }
-}
-
 // Call the main function to start the application
 main();
-
-//----------------------------------------------------------------------------------------------------------------------//
-//////////// | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-//  EVENT LISTENERS  EVENT LISTENERS  EVENT LISTENERS  EVENT LISTENERS  EVENT LISTENERS  EVENT LISTENERS  EVENT LISTENERS   
-//////////// v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v
-
-// Listen for clicks on the "Add Note" button and add a note to the stave from the appropriate array (if there are any notes left)
-document.getElementById("add-note").addEventListener("click", (e) => {
-    document.getElementById("animation-container").style.borderColor = "black";
-    console.log("Add Note button clicked");
-
-    // Determine which array to use based on the current clef
-    let notesArray = stave.clef === "treble" ? trebleNotes : bassNotes;
-
-    if (notesArray.length === 0) {
-        console.log("No more notes available.");
-        return;
-    }
-
-    handleClefChange(); // Handle clef changes based on condition
-    addNote(); // Add note function that now correctly handles noteGroup scope
-});
-
-// Listen for clicks on the "Right Answer" button and animate the correctly answered note moving upwards.
-document.getElementById("right-answer").addEventListener("click", (e) => {
-    document.getElementById("animation-container").style.borderColor = "green";
-    if (visibleNoteGroups.length === 0) return;
-    
-    // Remove the first note group from the array and animate it
-    const group = visibleNoteGroups.shift();
-    group.classList.add("correct");
-
-    // Force a reflow to ensure the transform applies immediately
-    window.getComputedStyle(group).transform;
-
-    // Extract the x translation value from the computed style and apply the transform
-    const transformMatrix = window.getComputedStyle(group).transform;
-    const x = transformMatrix.split(",")[4].trim();
-    group.style.transform = `translate(${x}px, -800px)`;
-});
-
-// Listen for clicks on the "Wrong Answer" button and animate the correctly answered note moving upwards.
-document.getElementById("wrong-answer").addEventListener("click", (e) => {
-    document.getElementById("animation-container").style.borderColor = "red";
-    if (visibleNoteGroups.length === 0) return;
-    
-    // Remove the first note group from the array and animate it
-    const group = visibleNoteGroups.shift();
-    group.classList.add("incorrect");
-
-    // Force a reflow to ensure the transform applies immediately
-    window.getComputedStyle(group).transform;
-
-    // Extract the x translation value from the computed style and apply the transform
-    const transformMatrix = window.getComputedStyle(group).transform;
-    const x = transformMatrix.split(",")[4].trim();
-    group.style.transform = `translate(${x}px, 800px)`;
-});
-
-// Listen for clicks on the "Too Slow" button and animate the correctly answered note moving upwards.
-document.getElementById("not-fast-enough-answer").addEventListener("click", (e) => {
-    document.getElementById("animation-container").style.borderColor = "purple";
-    if (visibleNoteGroups.length === 0) return;
-    
-    // Remove the first note group from the array and animate it
-    const group = visibleNoteGroups.shift();
-    group.classList.add("too-slow");
-
-    // Force a reflow to ensure the transform applies immediately
-    window.getComputedStyle(group).transform;
-
-    // Extract the x translation value from the computed style and apply the transform
-    const transformMatrix = window.getComputedStyle(group).transform;
-    const x = transformMatrix.split(",")[4].trim();
-    group.style.transform = `translate(${x}px, 0px)`;
-});

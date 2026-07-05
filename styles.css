@@ -51,15 +51,8 @@ button:hover {
     background-color: #0056b3; /* Darker blue on hover for feedback */
 }
 
-/* Container for the music sheet with scrolling */
-.sheet-music-container {
-    max-height: 400px; /* Limit height with overflow to manage long content */
-    overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #ccc; /* Light grey border for definition */
-}
-
 /* General container style for animations */
-#animation-container {
+.animation-container {
     width: 1570px;
     height: 150px;
     overflow: hidden; /* Hide overflow to manage the inner moving content */
@@ -67,7 +60,7 @@ button:hover {
     margin: 10px; /* Margin around the container */
 }
 
-#animation-container > div {
+.animation-container > div {
     width: 10000px; /* Very wide to accommodate moving content */
     height: 120px;
     white-space: nowrap; /* Prevent wrapping of content inside */
@@ -94,15 +87,15 @@ button:hover {
 
 
 /* Styling for the controls container */
-#controls {
+.controls {
     padding: 15px; /* Padding around the buttons for spacing */
     display: flex; /* Makes child elements (buttons) line up horizontally */
     flex-wrap: wrap; /* Allows buttons to wrap to next line if space runs out */
     justify-content: center; /* Center align the buttons horizontally */
 }
 
-/* Styling specifically for buttons inside the #controls */
-#controls > button {
+/* Styling specifically for buttons inside the .controls */
+.controls > button {
     margin: 20px; /* Margin around each button for spacing */
     background-color: lightgrey; /* Grey background for normal state */
     color: black; /* Black text for contrast */
@@ -114,8 +107,8 @@ button:hover {
     transition: background-color 0.3s ease; /* Smooth transition for background color change */
 }
 
-/* Hover effect for buttons inside #controls */
-#controls > button:hover {
+/* Hover effect for buttons inside .controls */
+.controls > button:hover {
     background-color: darkgrey; /* Darker grey on hover for feedback */
 }
 
@@ -154,5 +147,3 @@ button:hover {
     font-style: italic; /* Italicized for differentiation */
     text-align: center; /* Center alignment for visibility */
 }
-
-/* TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING */

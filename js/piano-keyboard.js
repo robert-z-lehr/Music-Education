@@ -9,7 +9,7 @@ const BLACK_KEY_WIDTH = 24;
 // (scale/chord overlays, song playback) to drive visually without simulating
 // real presses or triggering audio themselves.
 export class PianoKeyboard {
-    constructor(container, { startNote = "C3", endNote = "B4", onKeyDown = null, onKeyUp = null } = {}) {
+    constructor(container, { startNote = "C3", endNote = "C5", onKeyDown = null, onKeyUp = null } = {}) {
         this.container = container;
         this.onKeyDown = onKeyDown;
         this.onKeyUp = onKeyUp;

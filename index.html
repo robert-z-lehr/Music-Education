@@ -45,30 +45,12 @@
 
         <div id="chordQuestion" class="question-container"></div>
 
-        <div id="sheetMusicContainer" class="sheet-music-container"></div>
-
-        <div id="music-container"></div> <!-- testing -->
-        <!-- Dedicated container for rendering sheet music -->
-
-        <!-- Download buttons -->
-        <button id="downloadPdfBtn">Download as PDF</button>
-        <button id="downloadAsPngBtn">Download as PNG</button>
-
-            <!-- Additional control buttons and containers for extended functionality -->
-        <div id="animation-container">
-            <div id="output"></div>
-        </div>
-        <div id="controls">
-            <button id='add-note'>Add Note</button>
-            <button id='right-answer'>Right Answer</button>
-            <button id='wrong-answer'>Wrong Answer</button>
-            <button id='not-fast-enough-answer'>Too Slow</button>
-        </div>
+        <!-- Scrolling-note animations, one fixed-clef instance each, built by createScrollingNoteAnimation() in script.js -->
+        <div id="trebleScrollingNote"></div>
+        <div id="bassScrollingNote"></div>
     </div>
 
     <!-- Script dependencies, avoiding duplicate inclusion of libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.3/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vexflow/3.0.9/vexflow-min.js"></script>
     <!-- Include only one JavaScript file that encompasses functionalities required for both parts of the app -->
     <script src="script.js"></script>
