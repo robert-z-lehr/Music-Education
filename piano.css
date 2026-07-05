@@ -1,0 +1,64 @@
+/* Piano keyboard styles. Scoped entirely under .piano-keyboard / .piano-key so
+   nothing here interacts with styles.css's global element selectors (notably
+   the global `button` rule, which piano keys deliberately avoid by not being
+   <button> elements). */
+
+.piano-keyboard {
+    overflow-x: auto;
+    padding: 10px 0 20px;
+}
+
+.piano-keyboard__keys {
+    position: relative;
+    display: flex;
+    height: 160px;
+}
+
+.piano-key {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none; /* prevent scroll/zoom gestures from stealing pointer events */
+    cursor: pointer;
+}
+
+.piano-key--white {
+    position: relative;
+    height: 160px;
+    background: #fff;
+    border: 1px solid #999;
+    border-radius: 0 0 4px 4px;
+    z-index: 1;
+}
+
+.piano-key--black {
+    position: absolute;
+    top: 0;
+    height: 100px;
+    background: #222;
+    border: 1px solid #000;
+    border-radius: 0 0 3px 3px;
+    z-index: 2;
+}
+
+.piano-key--white.is-pressed {
+    background: #cfe8ff;
+}
+
+.piano-key--black.is-pressed {
+    background: #45607a;
+}
+
+.piano-key--white.is-active {
+    background: #ffe8a3;
+}
+
+.piano-key--black.is-active {
+    background: #8a6d1f;
+}
+
+.piano-key:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+    z-index: 3;
+}

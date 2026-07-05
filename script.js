@@ -241,13 +241,12 @@ function generateSingleNoteQuestion() {
     const selectedNote = notes[Math.floor(Math.random() * notes.length)];
     const selectedDuration = durations[Math.floor(Math.random() * durations.length)];
 
-    // Determine stem direction: down (-1) if note is on or below the middle line, else up (1)
-    const stemDirection = (selectedNote.split('/')[1] <= 4) ? 1 : -1;
-
+    // Stem direction is intentionally omitted: VexFlow auto-computes the correct
+    // direction from the note's staff position (down at/above the middle line,
+    // up below it), same as addNote()/getRandomNote() elsewhere in this file.
     const note = new VF.StaveNote({
         keys: [selectedNote],
-        duration: selectedDuration,
-        stem_direction: stemDirection
+        duration: selectedDuration
     });
 
     // Add accidental if needed
