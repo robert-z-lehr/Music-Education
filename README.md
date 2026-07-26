@@ -1,24 +1,41 @@
-# Access Music Exercises [Here](https://robert-z-lehr.github.io/Music-Education/)
----
+# Beginner Music Score Studio
 
-### Purpose
-To provide a comprehensive set of music education exericises and theory
----
+A browser-based, JSON-driven music education tool built for GitHub Pages.
 
-### Source:
-- [VexFlow](https://www.vexflow.com/)
-- [EasyScore](https://github.com/0xfe/vexflow/wiki/Using-EasyScore)
-- [VexWarp](https://github.com/0xfe/vexwarp)
----
+## Development branch features
 
-### MIT LICENSE
+- Single-staff and grand-staff scores
+- Multiple systems per page
+- Optional note names, finger numbers, pitch colors, accidentals, dynamics, clefs, and tempo
+- Large beginner-friendly notation on a cream paper interface
+- Printable static piano keyboard
+- Interactive Web Audio piano keyboard
+- Direct PDF download
+- Responsive desktop, tablet, and phone layout
 
-Copyright (c) Mohit Muthanna Cheppudira 2010
-0xFE mohit@muthanna.com https://www.vexflow.com
+## Edit the score content
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Example scores are stored in `score-data.js`. Each score is plain JavaScript data so additional pieces can be added without changing the renderer.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+```js
+{ p: "f#/4", d: "q", f: 4, a: "#" }
+```
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
----
+- `p`: VexFlow pitch and octave
+- `d`: duration, such as `q`, `h`, or `w`
+- `f`: optional finger number
+- `a`: optional displayed accidental
+
+## Architecture
+
+The first version intentionally separates score data, rendering, interface styling, keyboard audio, and PDF export. Future modules can add drag-and-drop editing, touch editing, MIDI, MusicXML, ABC notation, transposition, playback cursors, metronome, practice mode, worksheet mode, and flashcards.
+
+## Local use
+
+Open `index.html` through a local web server or deploy the branch with GitHub Pages. The application has no build step.
+
+## Libraries
+
+- VexFlow
+- html2canvas
+- jsPDF
