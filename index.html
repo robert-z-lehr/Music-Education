@@ -1,61 +1,69 @@
-<!-- ######################################################################################################################## -->
-<!-- ######################################################################################################################## -->
-<!-- ######################################################################################################################## -->
-
-<!DOCTYPE html>
-<!-- Declares the document type and version of HTML -->
+<!doctype html>
 <html lang="en">
-<!-- Opens the HTML document and specifies the language as English -->
-
 <head>
-    <!-- Opens the head section which contains meta-information about the document -->
-    <meta charset="UTF-8">
-    <!-- Specifies the character encoding for the HTML document -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Sets the viewport to ensure proper scaling and rendering on all devices -->
-    <title>Music Theory Application</title>
-    <!-- Document title -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- External CSS stylesheet -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4ecd8">
+  <title>Beginner Music Score Studio</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<!-- Closes the head section of the HTML document -->
-
 <body>
-    <!-- Opens the body section, which contains all the content displayed to the user. -->
-    <div class="app-container"> <!-- Main content container, often used as a wrapper to center content or apply consistent styling -->
-        <h1>Music Theory Reference Toolkit</h1> <!-- Main heading -->
-        <p class="subtitle">Explore the building blocks of music</p> <!-- Subtitle -->
-        <p><a href="piano.html">Try the Interactive Piano &rarr;</a></p> <!-- Link to the interactive piano page -->
-        <hr> <!-- Thematic break - horizontal line -->
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Music Education</p>
+        <h1>Beginner Score Studio</h1>
+        <p class="subtitle">Large, readable notation with optional teaching layers.</p>
+      </div>
+      <button id="downloadPdf" class="primary">Download PDF</button>
+    </header>
 
-        <!-- Music theory question containers with various IDs for unique identification and CSS class for styling -->
-        <div id="singleNoteQuestion" class="question-container"></div>
+    <section class="toolbar" aria-label="Score controls">
+      <label>Example
+        <select id="scoreSelect">
+          <option value="single">Single staff melody</option>
+          <option value="grand">Grand staff piano</option>
+        </select>
+      </label>
+      <label class="toggle"><input id="showNames" type="checkbox" checked><span>Note names</span></label>
+      <label class="toggle"><input id="showFingers" type="checkbox" checked><span>Finger numbers</span></label>
+      <label class="toggle"><input id="showColors" type="checkbox"><span>Colors</span></label>
+      <label class="toggle"><input id="showAccidentals" type="checkbox" checked><span>Accidentals</span></label>
+      <label class="toggle"><input id="showDynamics" type="checkbox" checked><span>Dynamics</span></label>
+      <label class="toggle"><input id="showClefs" type="checkbox" checked><span>Clefs</span></label>
+      <label class="toggle"><input id="showTempo" type="checkbox" checked><span>Tempo</span></label>
+    </section>
 
-        <div id="rhythmQuestion" class="question-container"></div>
+    <section id="printArea" class="paper">
+      <div class="score-heading">
+        <h2 id="scoreTitle"></h2>
+        <p id="scoreSubtitle"></p>
+      </div>
+      <div id="score" aria-label="Rendered music score"></div>
 
-        <div id="keySignatureQuestion" class="question-container"></div>
+      <section class="keyboard-section">
+        <div class="section-heading">
+          <h2>Keyboard reference</h2>
+          <p>Static note map for print and study.</p>
+        </div>
+        <div id="staticKeyboard" class="piano static" aria-label="Static piano keyboard"></div>
+      </section>
+    </section>
 
-        <div id="timeSignatureQuestion" class="question-container"></div>
+    <section class="interactive-panel">
+      <div class="section-heading">
+        <h2>Playable keyboard</h2>
+        <p>Click, tap, or use A W S E D F T G Y H U J K. Multiple notes may sound together.</p>
+      </div>
+      <div id="interactiveKeyboard" class="piano interactive" aria-label="Interactive piano keyboard"></div>
+      <output id="noteReadout" aria-live="polite">Select a key</output>
+    </section>
+  </main>
 
-        <div id="clefQuestion" class="question-container"></div>
-
-        <div id="articulationQuestion" class="question-container"></div>
-
-        <div id="accidentalQuestion" class="question-container"></div>
-
-        <div id="chordQuestion" class="question-container"></div>
-
-        <!-- Scrolling-note animations, one fixed-clef instance each, built by createScrollingNoteAnimation() in script.js -->
-        <div id="trebleScrollingNote"></div>
-        <div id="bassScrollingNote"></div>
-    </div>
-
-    <!-- Script dependencies, avoiding duplicate inclusion of libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vexflow/3.0.9/vexflow-min.js"></script>
-    <!-- Include only one JavaScript file that encompasses functionalities required for both parts of the app -->
-    <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vexflow/3.0.9/vexflow-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="score-data.js"></script>
+  <script src="script.js"></script>
 </body>
-<!-- Closes the body tag of the HTML document -->
-
 </html>
-<!-- Closes the HTML document -->
