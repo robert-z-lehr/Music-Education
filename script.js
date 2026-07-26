@@ -1,528 +1,140 @@
+(() => {
+  'use strict';
+  const VF = Vex.Flow;
+  const state = { scoreKey:'single', showNames:true, showFingers:true, showColors:false, showAccidentals:true, showDynamics:true, showClefs:true, showTempo:true };
+  const pitchColors = {c:'#d54b4b',d:'#e08731',e:'#d0a800',f:'#4c9b55',g:'#3689ad',a:'#5969b5',b:'#8a55a0'};
+  const $ = id => document.getElementById(id);
+  const controls = {
+    scoreKey:$('scoreSelect'),showNames:$('showNames'),showFingers:$('showFingers'),showColors:$('showColors'),
+    showAccidentals:$('showAccidentals'),showDynamics:$('showDynamics'),showClefs:$('showClefs'),showTempo:$('showTempo')
+  };
 
-// Music Theory Application [javascript file]
-
-//-----------------------------------------------------------------------------------------------------------------//
-//////////// | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-//  IMPORT DEPENDENCIES & DEFINE OBJECTS  IMPORT DEPENDENCIES & DEFINE OBJECTS  IMPORT DEPENDENCIES & DEFINE OBJECTS  
-//////////// v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v
-
-// Create a global variable named 'VF' to store the VexFlow namespace after loading the library
-let VF;
-
-// Define an array of possible note durations.
-const durations = ["8", "4", "2", "1"];
-
-// Generate an array of note configurations, each with a note letter, accidental, and octave.
-// For each note configuration, create a StaveNote object.
-// The map function transforms each note configuration into a StaveNote.
-// Adjusting the octave for treble clef to stay mostly on the staff
-
-// Define notes for treble and bass clefs
-const trebleNotes = [
-    ["a", "", "4"],
-    ["a", "b", "4"],
-    ["a", "#", "4"],
-    ["b", "", "4"],
-    ["b", "b", "4"],
-    ["b", "#", "4"],
-    ["c", "", "4"],
-    ["c", "b", "4"],
-    ["c", "#", "4"],
-    ["d", "", "4"],
-    ["d", "b", "4"],
-    ["d", "#", "4"],
-    ["e", "", "4"],
-    ["e", "b", "4"],
-    ["e", "#", "4"],
-    ["f", "", "4"],
-    ["f", "b", "4"],
-    ["f", "#", "4"],
-    ["g", "", "4"],
-    ["g", "b", "4"],
-    ["g", "#", "4"]
-];
-const bassNotes = [
-    ["a", "", "3"],
-    ["a", "b", "3"],
-    ["a", "#", "3"],
-    ["b", "", "3"],
-    ["b", "b", "3"],
-    ["b", "#", "3"],
-    ["c", "", "3"],
-    ["c", "b", "3"],
-    ["c", "#", "3"],
-    ["d", "", "3"],
-    ["d", "b", "3"],
-    ["d", "#", "3"],
-    ["e", "", "3"],
-    ["e", "b", "3"],
-    ["e", "#", "3"],
-    ["f", "", "3"],
-    ["f", "b", "3"],
-    ["f", "#", "3"],
-    ["g", "", "3"],
-    ["g", "b", "3"],
-    ["g", "#", "3"]
-];
-
-// Initialize VexFlow
-window.onload = function() {
-    generateSingleNoteQuestion();
-};
-
-//----------------------------------------------------------------------------------------------------------------------------------// 
-//////////// | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-//  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  FUNCTIONS  
-//////////// v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v v
-
-// MAIN FUNCTION | MAIN FUNCTION | MAIN FUNCTION | MAIN FUNCTION | MAIN FUNCTION | MAIN FUNCTION | MAIN FUNCTION | MAIN FUNCTION |
-function main() { // Main function to start the application
-    // Start loading VexFlow immediately, not waiting for DOM content to load
-    loadVexFlowScript();
-}
-
-// LOAD VEXFLOW LIBRARY FUNCTION | LOAD VEXFLOW LIBRARY FUNCTION | LOAD VEXFLOW LIBRARY FUNCTION | LOAD VEXFLOW LIBRARY FUNCTION |
-function loadVexFlowScript() { // Function to load the VexFlow library and set up the application
-    const script = document.createElement('script');
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/vexflow/3.0.9/vexflow-min.js";
-    script.onload = () => {
-        VF = Vex.Flow;
-        initializeMusicTheoryQuestions();
-    };
-    document.head.appendChild(script);
-}
-
-function initializeMusicTheoryQuestions() { // Function to initialize all music theory questions
-    generateTimeSignatureQuestion();
-    generateKeySignatureQuestion();
-    generateRhythmQuestion();
-    generateSingleNoteQuestion();
-    generateArticulationQuestion(); // TBD
-    generateAccidentalQuestion(); // TBD
-    generateClefQuestion(); // TBD
-    generateChordQuestion(); // TBD
-    // Initialize more questions here...
-
-    createScrollingNoteAnimation(document.getElementById('trebleScrollingNote'), {
-        clef: 'treble',
-        notes: trebleNotes
+  function noteName(pitch){ const [raw,oct]=pitch.split('/'); return raw[0].toUpperCase() + (raw.includes('#')?'♯':raw.includes('b')?'♭':''); }
+  function makeAnnotation(text, position, size=13){
+    return new VF.Annotation(String(text)).setFont('Arial',size,'bold').setJustification(VF.Annotation.Justify.CENTER)
+      .setVerticalJustification(position);
+  }
+  function makeNotes(data, clef){
+    return data.map(item => {
+      const note = new VF.StaveNote({clef, keys:[item.p], duration:item.d, auto_stem:true});
+      if(state.showAccidentals && item.a) note.addAccidental(0,new VF.Accidental(item.a));
+      if(state.showNames){
+        const ann=makeAnnotation(noteName(item.p),VF.Annotation.VerticalJustify.CENTER,11);
+        note.addAnnotation(0,ann);
+      }
+      if(state.showFingers && item.f){
+        const pos=clef==='bass'?VF.Annotation.VerticalJustify.BOTTOM:VF.Annotation.VerticalJustify.TOP;
+        note.addAnnotation(0,makeAnnotation(item.f,pos,13));
+      }
+      if(state.showColors){
+        const color=pitchColors[item.p[0].toLowerCase()] || '#333';
+        note.setStyle({fillStyle:color,strokeStyle:color});
+      }
+      return note;
     });
-    createScrollingNoteAnimation(document.getElementById('bassScrollingNote'), {
-        clef: 'bass',
-        notes: bassNotes
-    });
-}
-
-// SINGLE NOTE UPDATED FUNCTION | SINGLE NOTE UPDATED FUNCTION | SINGLE NOTE UPDATED FUNCTION | SINGLE NOTE UPDATED FUNCTION |
-function generateSingleNoteQuestion() {
-    const questionDiv = document.getElementById("singleNoteQuestion");
-    questionDiv.innerHTML = ''; // Clear the container
-
-    // Create a container for the button and the VexFlow object
-    const controlsAndStaffContainer = document.createElement('div');
-    controlsAndStaffContainer.style.display = 'flex';
-    controlsAndStaffContainer.style.alignItems = 'flex-start';
-    questionDiv.appendChild(controlsAndStaffContainer);
-
-    // Create a container for the button and text box (vertical layout)
-    const controlsContainer = document.createElement('div');
-    controlsContainer.style.display = 'flex';
-    controlsContainer.style.flexDirection = 'column';
-    controlsAndStaffContainer.appendChild(controlsContainer);
-
-    // Create and append the question label above everything
-    const label = document.createElement('p');
-    label.textContent = 'Name the note:';
-    controlsContainer.appendChild(label);
-
-    // Create and append the button
-    const button = document.createElement('button');
-    button.textContent = 'New Note';
-    button.addEventListener('click', generateSingleNoteQuestion);
-    controlsContainer.appendChild(button);
-
-    // Container for the VexFlow object
-    const staffContainer = document.createElement('div');
-    staffContainer.style.flexGrow = '1';
-    staffContainer.style.paddingLeft = '20px';
-    controlsAndStaffContainer.appendChild(staffContainer);
-
-    // Set up VexFlow and draw the staff inside the staff container
-    const renderer = new VF.Renderer(staffContainer, VF.Renderer.Backends.SVG);
-    renderer.resize(250, 200);
-    const context = renderer.getContext();
-    const stave = new VF.Stave(0, 0, 200);
-    stave.addClef("treble").setContext(context).draw();
-
-    // Generate and draw a random note
-    const notes = [
-        "c/4", "d/4", "e/4", "f/4", "g/4", "a/4", "b/4",
-        "c#/4", "d#/4", "e#/4", "f#/4", "g#/4", "a#/4", "b#/4",
-        "cb/4", "db/4", "eb/4", "fb/4", "gb/4", "ab/4", "bb/4",
-        "c/5", "d/5", "e/5", "f/5", "g/5", "a/5", "b/5",
-        "c#/5", "d#/5", "e#/5", "f#/5", "g#/5", "a#/5", "b#/5",
-        "cb/5", "db/5", "eb/5", "fb/5", "gb/5", "ab/5", "bb/5"
-    ];
-    const durations = ["w", "h", "q", "8", "16"];
-    const selectedNote = notes[Math.floor(Math.random() * notes.length)];
-    const selectedDuration = durations[Math.floor(Math.random() * durations.length)];
-
-    // auto_stem: true makes VexFlow actually run its own stem-direction
-    // calculation (down at/above the middle line, up below it). Without this
-    // flag VexFlow silently defaults every note to an upward stem.
-    const note = new VF.StaveNote({
-        keys: [selectedNote],
-        duration: selectedDuration,
-        auto_stem: true
-    });
-
-    // Add accidental if needed
-    if (selectedNote.includes("#")) {
-        note.addAccidental(0, new VF.Accidental("#"));
-    } else if (selectedNote.includes("b")) {
-        note.addAccidental(0, new VF.Accidental("b"));
-    }
-
-    VF.Formatter.FormatAndDraw(context, stave, [note]);
-}
-
-// RHYTHM QUESTION FUNCTION | RHYTHM QUESTION FUNCTION | RHYTHM QUESTION FUNCTION | RHYTHM QUESTION FUNCTION | RHYTHM QUESTION FUNCTION | 
-function generateRhythmQuestion() {
-    const questionDiv = document.getElementById("rhythmQuestion");
-    questionDiv.innerHTML = ''; // Clear the container
-
-    // Create a container for the button and the VexFlow object
-    const controlsAndStaffContainer = document.createElement('div');
-    controlsAndStaffContainer.style.display = 'flex';
-    controlsAndStaffContainer.style.alignItems = 'flex-start';
-    questionDiv.appendChild(controlsAndStaffContainer);
-
-    // Create a container for the button and text box (vertical layout)
-    const controlsContainer = document.createElement('div');
-    controlsContainer.style.display = 'flex';
-    controlsContainer.style.flexDirection = 'column';
-    controlsAndStaffContainer.appendChild(controlsContainer);
-
-    // Create and append the question label above everything
-    const label = document.createElement('p');
-    label.textContent = 'Clap the rhythm shown:';
-    controlsContainer.appendChild(label);
-
-    // Create and append the button
-    const button = document.createElement('button');
-    button.textContent = 'New Rhythm';
-    button.addEventListener('click', generateRhythmQuestion);
-    controlsContainer.appendChild(button);
-
-// Create and append the text box below the button
-    // const textBox = document.createElement('input');
-    // textBox.type = 'text';
-    // textBox.setAttribute('maxlength', '200');
-    // textBox.setAttribute('placeholder', 'Type your answer here...');
-    // textBox.style.marginTop = '10px';
-    // controlsContainer.appendChild(textBox);
-
-    // Container for the VexFlow object
-    const staffContainer = document.createElement('div');
-    staffContainer.style.flexGrow = '1';
-    staffContainer.style.paddingLeft = '20px';
-    controlsAndStaffContainer.appendChild(staffContainer);
-
-    // Set up VexFlow and draw the staff inside the staff container
-    const renderer = new VF.Renderer(staffContainer, VF.Renderer.Backends.SVG);
-    renderer.resize(500, 150);
-    const context = renderer.getContext();
-    const stave = new VF.Stave(0, 0, 400);
-    stave.addClef("percussion");
-    stave.setContext(context).draw();
-
-    // Define rhythm patterns and select one
-    const rhythmPatterns = [
-        ["q", "q", "q", "q"], 
-        ["8", "8", "q", "q", "q"],
-        ["q", "8", "8", "q", "q"],
-        ["q", "q", "8", "8", "q"],
-        ["16", "16", "16", "16", "q", "q"],
-        ["1", "2", "q", "8", "16", "32"],
-        ["3", "3", "2", "q", "8", "8", "16", "16"],
-        ["1"]
-    ];
-    const selectedPattern = rhythmPatterns[Math.floor(Math.random() * rhythmPatterns.length)];
-
-    // Generate and draw notes based on the selected rhythm pattern
-    const notes = selectedPattern.map(duration => new VF.StaveNote({
-        keys: ["b/4"],
-        duration: duration,
-        auto_stem: true
-    }));
-    const beams = VF.Beam.generateBeams(notes.filter(note => note.duration !== "q" && note.duration !== "h" && note.duration !== "w"));
-    VF.Formatter.FormatAndDraw(context, stave, notes);
-    beams.forEach(beam => beam.setContext(context).draw());
-}
-
-// KEY SIGNATURE FUNCTION | KEY SIGNATURE FUNCTION | KEY SIGNATURE FUNCTION | KEY SIGNATURE FUNCTION | KEY SIGNATURE FUNCTION |
-function generateKeySignatureQuestion() {
-    const questionDiv = document.getElementById("keySignatureQuestion");
-    questionDiv.innerHTML = ''; // Clear the container
-
-    // Create a container for the button and the VexFlow object
-    const controlsAndStaffContainer = document.createElement('div');
-    controlsAndStaffContainer.style.display = 'flex';
-    controlsAndStaffContainer.style.alignItems = 'flex-start'; // Align items at the start of the container
-    questionDiv.appendChild(controlsAndStaffContainer);
-
-    // Create a container for the button and text box (vertical layout)
-    const controlsContainer = document.createElement('div');
-    controlsContainer.style.display = 'flex';
-    controlsContainer.style.flexDirection = 'column'; // Stack items vertically
-    controlsAndStaffContainer.appendChild(controlsContainer);
-
-    // Create and append the question label above everything
-    const label = document.createElement('p');
-    label.textContent = 'Identify the major key signature:';
-    controlsContainer.appendChild(label); // Append the label to the controls container for vertical alignment
-
-    // Create and append the button
-    const button = document.createElement('button');
-    button.textContent = 'New Key Signature';
-    button.addEventListener('click', generateKeySignatureQuestion);
-    controlsContainer.appendChild(button); // Append the button to the controls container
-
-// Create and append the text box below the button
-    // const textBox = document.createElement('input');
-    // textBox.type = 'text';
-    // textBox.setAttribute('maxlength', '200');
-    // textBox.setAttribute('placeholder', 'Type your answer here...');
-    // textBox.style.marginTop = '10px'; // Add some space between the button and the text box
-    // controlsContainer.appendChild(textBox); // Append the text box to the controls container
-
-    // Container for the VexFlow object
-    const staffContainer = document.createElement('div');
-    staffContainer.style.flexGrow = '1'; // Allow the staff container to take up remaining space
-    staffContainer.style.paddingLeft = '20px'; // Add some space between the controls and the staff
-    controlsAndStaffContainer.appendChild(staffContainer);
-
-    // Set up VexFlow and draw the staff inside the staff container
-    const renderer = new VF.Renderer(staffContainer, VF.Renderer.Backends.SVG);
-    renderer.resize(500, 150); // Set the size of the staff
-    const context = renderer.getContext();
-    const stave = new VF.Stave(0, 0, 400); // Adjust starting position if needed
-
-    // Define an array of possible key signatures and select one at random
-    const keySignatures = [
-        "C", "G", "D", "A", "E", "B", "F#", "C#",
-        "F", "Bb", "Eb", "Ab", "Db", "Gb", "Cb"
-    ];
-    const selectedKeySignature = keySignatures[Math.floor(Math.random() * keySignatures.length)];
-
-    // Use the randomly selected key signature
-    stave.addClef("treble").addKeySignature(selectedKeySignature);
-    stave.setContext(context).draw();
-}
-
-// TIME SIGNATURE FUNCTION | TIME SIGNATURE FUNCTION | TIME SIGNATURE FUNCTION | TIME SIGNATURE FUNCTION | TIME SIGNATURE FUNCTION | 
-function generateTimeSignatureQuestion() {
-    const questionDiv = document.getElementById("timeSignatureQuestion");
-    questionDiv.innerHTML = ''; // Clear the container
-
-    // Create a container for the button and the VexFlow object
-    const controlsAndStaffContainer = document.createElement('div');
-    controlsAndStaffContainer.style.display = 'flex';
-    controlsAndStaffContainer.style.alignItems = 'flex-start'; // Align items at the start of the container
-    questionDiv.appendChild(controlsAndStaffContainer);
-
-    // Create a container for the button and text box (vertical layout)
-    const controlsContainer = document.createElement('div');
-    controlsContainer.style.display = 'flex';
-    controlsContainer.style.flexDirection = 'column'; // Stack items vertically
-    controlsAndStaffContainer.appendChild(controlsContainer);
-
-    // Create and append the question label above everything
-    const label = document.createElement('p');
-    label.textContent = 'What does this time signature tell us?';
-    controlsContainer.appendChild(label); // Append the label to the controls container for vertical alignment
-
-    // Create and append the button
-    const button = document.createElement('button');
-    button.textContent = 'New Time Signature';
-    button.addEventListener('click', generateTimeSignatureQuestion);
-    controlsContainer.appendChild(button); // Append the button to the controls container
-
-// Create and append the text box below the button
-    // const textBox = document.createElement('input');
-    // textBox.type = 'text';
-    // textBox.setAttribute('maxlength', '200');
-    // textBox.setAttribute('placeholder', 'Type your answer here...');
-    // textBox.style.marginTop = '10px'; // Add some space between the button and the text box
-    // controlsContainer.appendChild(textBox); // Append the text box to the controls container
-
-    // Container for the VexFlow object
-    const staffContainer = document.createElement('div');
-    staffContainer.style.flexGrow = '1'; // Allow the staff container to take up remaining space
-    staffContainer.style.paddingLeft = '20px'; // Add some space between the controls and the staff
-    controlsAndStaffContainer.appendChild(staffContainer);
-
-    // Set up VexFlow and draw the staff inside the staff container
-    const renderer = new VF.Renderer(staffContainer, VF.Renderer.Backends.SVG);
-    renderer.resize(500, 150); // Set the size of the staff
-    const context = renderer.getContext();
-    const stave = new VF.Stave(0, 0, 400); // Adjust starting position if needed
-    const timeSignatures = ["4/4", "3/4", "2/4", "6/8", "5/4", "7/8"];
-    const selectedTimeSignature = timeSignatures[Math.floor(Math.random() * timeSignatures.length)];
-    stave.addTimeSignature(selectedTimeSignature);
-    stave.setContext(context).draw();
-}
-
-// GENERATE CLEF FUNCTION | GENERATE CLEF FUNCTION | GENERATE CLEF FUNCTION | GENERATE CLEF FUNCTION | GENERATE CLEF FUNCTION |
-function generateClefQuestion() { // Logic for generating a new clef question
-}
-
-// GENERATE ARTICULATION FUNCTION | GENERATE ARTICULATION FUNCTION | GENERATE ARTICULATION FUNCTION | GENERATE ARTICULATION FUNCTION |
-function generateArticulationQuestion() { // Logic for generating a new articulation question
-}
-
-// GENERATE ACCIDENTAL FUNCTION | GENERATE ACCIDENTAL FUNCTION | GENERATE ACCIDENTAL FUNCTION | GENERATE ACCIDENTAL FUNCTION |
-function generateAccidentalQuestion() { // Logic for generating a new articulation question
-}
-
-// GENERATE CHORD FUNCTION | GENERATE CHORD FUNCTION | GENERATE CHORD FUNCTION | GENERATE CHORD FUNCTION | GENERATE CHORD FUNCTION |
-function generateChordQuestion() { // Logic for generating a new chord question
-}
-
-// SCROLLING NOTE ANIMATION FACTORY | SCROLLING NOTE ANIMATION FACTORY | SCROLLING NOTE ANIMATION FACTORY |
-// Builds a self-contained scrolling-note-animation instance (its own stave,
-// renderer, controls, and note-group state) into `container`, parameterized
-// by clef so the same logic drives both a treble-only and a bass-only
-// instance instead of duplicating it.
-function createScrollingNoteAnimation(container, { clef, notes }) {
-    container.innerHTML = '';
-
-    const heading = document.createElement('h3');
-    heading.textContent = clef === 'treble' ? 'Treble Clef' : 'Bass Clef';
-    container.appendChild(heading);
-
-    const animationContainer = document.createElement('div');
-    animationContainer.classList.add('animation-container');
-    const outputDiv = document.createElement('div');
-    animationContainer.appendChild(outputDiv);
-    container.appendChild(animationContainer);
-
-    const controlsDiv = document.createElement('div');
-    controlsDiv.classList.add('controls');
-    container.appendChild(controlsDiv);
-
-    const addNoteBtn = document.createElement('button');
-    addNoteBtn.textContent = 'Add Note';
-    const rightAnswerBtn = document.createElement('button');
-    rightAnswerBtn.textContent = 'Right Answer';
-    const wrongAnswerBtn = document.createElement('button');
-    wrongAnswerBtn.textContent = 'Wrong Answer';
-    const tooSlowBtn = document.createElement('button');
-    tooSlowBtn.textContent = 'Too Slow';
-    [addNoteBtn, rightAnswerBtn, wrongAnswerBtn, tooSlowBtn].forEach(btn => controlsDiv.appendChild(btn));
-
-    const renderer = new VF.Renderer(outputDiv, VF.Renderer.Backends.SVG);
-    renderer.resize(1560, 1000);
-    const context = renderer.getContext();
-    const tickContext = new VF.TickContext();
-    const stave = new VF.Stave(10, 10, 1550).addClef(clef);
-    stave.setContext(context).draw();
-    tickContext.preFormat().setX(1540);
-
-    const visibleNoteGroups = [];
-
-    function addNote() {
-        const randomIndex = Math.floor(Math.random() * notes.length);
-        const [letter, accidental, octave] = notes[randomIndex];
-        const duration = durations[Math.floor(Math.random() * durations.length)];
-
-        const note = new VF.StaveNote({
-            clef,
-            keys: [`${letter}${accidental}/${octave}`],
-            duration: duration,
-            auto_stem: true
-        });
-
-        if (accidental) {
-            note.addAccidental(0, new VF.Accidental(accidental));
+  }
+  function addDynamic(notes,value){
+    if(state.showDynamics && value && notes[0]) notes[0].addAnnotation(0,makeAnnotation(value,VF.Annotation.VerticalJustify.BOTTOM,15));
+  }
+  function drawVoice(ctx,stave,notes,time){
+    const voice=new VF.Voice({num_beats:Number(time.split('/')[0]),beat_value:Number(time.split('/')[1])});
+    voice.addTickables(notes);
+    new VF.Formatter().joinVoices([voice]).format([voice],Math.max(110,stave.getWidth()-70));
+    voice.draw(ctx,stave);
+  }
+  function prepStave(stave,clef,score,isFirst){
+    if(state.showClefs) stave.addClef(clef);
+    if(isFirst) stave.addTimeSignature(score.time);
+    if(isFirst && state.showTempo) stave.setTempo({name:score.tempo.name,duration:'q',bpm:score.tempo.bpm},-5);
+  }
+  function renderScore(){
+    const score=window.SCORE_LIBRARY[state.scoreKey];
+    $('scoreTitle').textContent=score.title;
+    $('scoreSubtitle').textContent=score.subtitle;
+    const host=$('score'); host.innerHTML='';
+    const available=Math.max(680,Math.min(1380,host.clientWidth||1200));
+    const margin=20, systemGap=score.staffType==='grand'?245:155;
+    const per=score.measuresPerSystem;
+    const systems=Math.ceil(score.measures.length/per);
+    const height=systems*systemGap+70;
+    const renderer=new VF.Renderer(host,VF.Renderer.Backends.SVG); renderer.resize(available,height);
+    const ctx=renderer.getContext(); ctx.setFont('Arial',10,'');
+    for(let s=0;s<systems;s++){
+      const start=s*per, count=Math.min(per,score.measures.length-start), usable=available-margin*2;
+      const measureW=usable/count;
+      const top=40+s*systemGap;
+      for(let i=0;i<count;i++){
+        const m=score.measures[start+i], x=margin+i*measureW, first=(i===0), globalFirst=(start+i===0);
+        if(score.staffType==='single'){
+          const stave=new VF.Stave(x,top,measureW); prepStave(stave,score.clef,score,globalFirst); stave.setContext(ctx).draw();
+          const notes=makeNotes(m.notes,score.clef); addDynamic(notes,m.dynamic); drawVoice(ctx,stave,notes,score.time);
+        } else {
+          const treble=new VF.Stave(x,top,measureW), bass=new VF.Stave(x,top+105,measureW);
+          prepStave(treble,'treble',score,globalFirst); prepStave(bass,'bass',score,false);
+          treble.setContext(ctx).draw(); bass.setContext(ctx).draw();
+          if(first){ new VF.StaveConnector(treble,bass).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw(); }
+          new VF.StaveConnector(treble,bass).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(ctx).draw();
+          const tn=makeNotes(m.treble,'treble'), bn=makeNotes(m.bass,'bass'); addDynamic(tn,m.dynamic);
+          drawVoice(ctx,treble,tn,score.time); drawVoice(ctx,bass,bn,score.time);
         }
-
-        tickContext.addTickable(note).preFormat().setX(1540);
-
-        const noteGroup = context.openGroup();
-        note.setContext(context).setStave(stave).draw();
-        context.closeGroup();
-
-        window.getComputedStyle(noteGroup).transform;
-        noteGroup.classList.add("scroll");
-
-        setTimeout(() => {
-            noteGroup.classList.add("scrolling");
-        }, 100); // Ensures CSS catches up to start transition
-
-        visibleNoteGroups.push(noteGroup);
+      }
     }
+  }
 
-    function animateAnswer(className, translateY) {
-        if (visibleNoteGroups.length === 0) return;
-
-        const group = visibleNoteGroups.shift();
-        group.classList.add(className);
-
-        // Force a reflow to ensure the transform applies immediately
-        window.getComputedStyle(group).transform;
-
-        const transformMatrix = window.getComputedStyle(group).transform;
-        const x = transformMatrix.split(",")[4].trim();
-        group.style.transform = `translate(${x}px, ${translateY}px)`;
+  const keyMap=['a','w','s','e','d','f','t','g','y','h','u','j','k'];
+  const semitoneNames=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+  function buildKeyboard(id,interactive){
+    const host=$(id); host.innerHTML='';
+    const start=60,end=84, whites=[];
+    for(let midi=start;midi<=end;midi++){
+      const pc=midi%12, octave=Math.floor(midi/12)-1, isBlack=[1,3,6,8,10].includes(pc);
+      if(!isBlack){
+        const el=document.createElement('div'); el.className='key white-key'; el.dataset.midi=midi;
+        el.innerHTML=`<span>${semitoneNames[pc]}<small>${octave}</small></span>`; host.appendChild(el); whites.push({midi,el});
+      }
     }
+    for(let midi=start;midi<=end;midi++){
+      const pc=midi%12;if(![1,3,6,8,10].includes(pc))continue;
+      const octave=Math.floor(midi/12)-1, prevWhite=whites.filter(w=>w.midi<midi).length-1;
+      const el=document.createElement('div'); el.className='key black-key'; el.dataset.midi=midi;
+      el.style.left=`calc(${((prevWhite+1)/whites.length)*100}% - 2.05%)`;
+      el.innerHTML=`<span>${semitoneNames[pc]}<small>${octave}</small></span>`; host.appendChild(el);
+    }
+    if(interactive) attachKeyboard(host);
+  }
+  let audioCtx;
+  function frequency(midi){return 440*Math.pow(2,(midi-69)/12)}
+  function play(midi,el){
+    audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();
+    const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
+    osc.type='triangle'; osc.frequency.value=frequency(midi); gain.gain.setValueAtTime(.0001,audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.22,audioCtx.currentTime+.015); gain.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.8);
+    osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime+.85); el.classList.add('active');
+    setTimeout(()=>el.classList.remove('active'),180);
+    const pc=midi%12,oct=Math.floor(midi/12)-1; $('noteReadout').textContent=`${semitoneNames[pc]}${oct} · ${frequency(midi).toFixed(2)} Hz`;
+  }
+  function attachKeyboard(host){
+    host.addEventListener('pointerdown',e=>{const key=e.target.closest('.key');if(key)play(Number(key.dataset.midi),key)});
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.repeat)return; const i=keyMap.indexOf(e.key.toLowerCase()); if(i<0)return;
+    const midi=60+i, key=document.querySelector(`#interactiveKeyboard [data-midi="${midi}"]`); if(key)play(midi,key);
+  });
 
-    addNoteBtn.addEventListener('click', () => {
-        animationContainer.style.borderColor = 'black';
-        addNote();
-    });
-    rightAnswerBtn.addEventListener('click', () => {
-        animationContainer.style.borderColor = 'green';
-        animateAnswer('correct', -800);
-    });
-    wrongAnswerBtn.addEventListener('click', () => {
-        animationContainer.style.borderColor = 'red';
-        animateAnswer('incorrect', 800);
-    });
-    tooSlowBtn.addEventListener('click', () => {
-        animationContainer.style.borderColor = 'purple';
-        animateAnswer('too-slow', 0);
-    });
-}
-
-// CLEAR AND RENDER CONTENT FUNCTION | CLEAR AND RENDER CONTENT FUNCTION | CLEAR AND RENDER CONTENT FUNCTION | CLEAR AND RENDER CONTENT FUNCTION |
-function clearAndSetUpRenderer(elementId) { // To set up the renderer and clear previous content
-    const div = document.getElementById(elementId);
-    div.innerHTML = '';
-    const renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-    renderer.resize(500, 150);
-    const context = renderer.getContext();
-    return { div, context };
-}
-
-// SELECT RANDOM ELEMENT FROM ARRAY FUNCTION | SELECT RANDOM ELEMENT FROM ARRAY FUNCTION | SELECT RANDOM ELEMENT FROM ARRAY FUNCTION |
-function selectRandomElement(array) { // Function to select a random element from an array
-    const randomIndex = Math.floor(Math.random() * array.length);
-    return array[randomIndex];
-}
-
-// ADD NEW QUESTION BUTTON FUNCTION | ADD NEW QUESTION BUTTON FUNCTION | ADD NEW QUESTION BUTTON FUNCTION | ADD NEW QUESTION BUTTON FUNCTION |
-function addNewQuestionButton(div, buttonText, onClickFunction) { // to add a new question button
-    const btn = document.createElement('button');
-    btn.textContent = buttonText;
-    btn.onclick = onClickFunction;
-    div.appendChild(btn);
-}
-
-// APPEND QUESTION LABEL FUNCTION | APPEND QUESTION LABEL FUNCTION | APPEND QUESTION LABEL FUNCTION | APPEND QUESTION LABEL FUNCTION |
-function appendQuestionLabel(div, labelText) { // Function to append a question label
-    div.insertAdjacentHTML('beforeend', `<p>${labelText}</p>`);
-}
-
-// Call the main function to start the application
-main();
+  async function downloadPdf(){
+    const button=$('downloadPdf'); button.disabled=true; button.textContent='Preparing PDF…';
+    try{
+      const canvas=await html2canvas($('printArea'),{scale:2,backgroundColor:'#fffaf0',useCORS:true});
+      const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4');
+      const pageW=210,pageH=297,imgW=pageW, imgH=canvas.height*imgW/canvas.width;
+      let remaining=imgH,position=0; const data=canvas.toDataURL('image/png');
+      pdf.addImage(data,'PNG',0,position,imgW,imgH); remaining-=pageH;
+      while(remaining>0){position=remaining-imgH;pdf.addPage();pdf.addImage(data,'PNG',0,position,imgW,imgH);remaining-=pageH;}
+      pdf.save(`${window.SCORE_LIBRARY[state.scoreKey].title.replace(/\s+/g,'-').toLowerCase()}.pdf`);
+    } finally {button.disabled=false;button.textContent='Download PDF';}
+  }
+  Object.entries(controls).forEach(([key,el])=>el.addEventListener('change',()=>{state[key]=el.type==='checkbox'?el.checked:el.value;renderScore()}));
+  $('downloadPdf').addEventListener('click',downloadPdf);
+  let resizeTimer; window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(renderScore,180)});
+  buildKeyboard('staticKeyboard',false); buildKeyboard('interactiveKeyboard',true); renderScore();
+})();
