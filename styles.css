@@ -1,158 +1,291 @@
-/* Music Theory Application Styles */
-
-/* Basic Reset - Setting base styles for common elements */
-body, h1, p, button {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif; /* Uniform font for clean appearance */
+:root {
+  --bg: #f7f5ef;
+  --surface: #fffdf8;
+  --ink: #171717;
+  --muted: #66645f;
+  --line: #dcd8cf;
+  --accent: #2f5d50;
+  --accent-soft: #dfeae5;
+  --warm: #e8c88d;
+  --shadow: 0 14px 40px rgba(30, 30, 20, 0.08);
+  --radius: 22px;
+  --max: 1180px;
 }
 
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-    background-color: #f0f0f0; /* Light grey background for ease on the eyes */
-    color: #333; /* Dark grey text for good contrast */
-    line-height: 1.6; /* Spacing between lines */
-    padding: 20px; /* Padding around the content of the entire body */
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
 }
 
-/* Main container for centered content */
-.app-container {
-    max-width: 1600px; /* Maximum width of the container */
-    margin: auto; /* Center the container horizontally */
-    background: #fff; /* White background for the container */
-    padding: 20px; /* Padding inside the container */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for 3D effect */
+a { color: inherit; }
+button, input { font: inherit; }
+code { background: #eeebe3; padding: .1rem .35rem; border-radius: 6px; }
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1rem max(5vw, 1.25rem);
+  background: rgba(247,245,239,.92);
+  border-bottom: 1px solid rgba(220,216,207,.85);
+  backdrop-filter: blur(14px);
 }
 
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: white;
+}
+
+.site-nav { display: flex; gap: 1.35rem; }
+.site-nav a { text-decoration: none; color: var(--muted); font-weight: 650; }
+.site-nav a:hover { color: var(--ink); }
+.nav-toggle { display: none; border: 0; background: transparent; font-weight: 700; }
+
+.hero, .section {
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin: 0 auto;
+}
+
+.hero {
+  min-height: 76vh;
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+  padding: 5rem 0 4rem;
+}
+
+.eyebrow {
+  margin: 0 0 .65rem;
+  font-size: .74rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+  color: var(--accent);
+}
+
+h1, h2, h3, p { margin-top: 0; }
 h1 {
-    text-align: center; /* Center aligning the main heading */
-    color: #444; /* Slightly lighter grey than text for differentiation */
+  margin-bottom: 1.3rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3rem, 7vw, 6.8rem);
+  line-height: .93;
+  letter-spacing: -.055em;
+  font-weight: 500;
+}
+h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.15rem, 4.5vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -.035em;
+  font-weight: 500;
+}
+h3 { font-size: 1.08rem; }
+
+.hero-lead, .section-heading > p, .split-section > div:first-child > p {
+  max-width: 650px;
+  color: var(--muted);
+  font-size: 1.08rem;
 }
 
-p {
-    margin-bottom: 20px; /* Space below paragraphs */
+.hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 46px;
+  padding: .75rem 1.05rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 800;
+  cursor: pointer;
+}
+.button.primary { background: var(--ink); color: white; }
+.button.secondary { background: transparent; color: var(--ink); }
+.button:hover { transform: translateY(-1px); }
+.button.full { width: 100%; }
+
+.hero-card {
+  display: grid;
+  gap: .75rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.loop-step {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  grid-template-areas: "n strong" "n small";
+  column-gap: .8rem;
+  padding: .8rem;
+  border-radius: 16px;
+}
+.loop-step:hover { background: var(--accent-soft); }
+.loop-step span {
+  grid-area: n;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  font-weight: 850;
+}
+.loop-step strong { grid-area: strong; }
+.loop-step small { grid-area: small; color: var(--muted); }
+
+.section { padding: 5.5rem 0; border-top: 1px solid var(--line); }
+.section-heading {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 2.2rem;
+}
+.section-heading h2 { margin-bottom: 0; }
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  gap: 3rem;
+}
+.principle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.principle-grid article, .panel, .resource-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.principle-grid p, .panel p, .resource-card p { color: var(--muted); margin-bottom: 0; }
+
+.lesson-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.lesson-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 270px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: .2s ease;
+}
+.lesson-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.lesson-number { color: var(--accent); font-size: .75rem; font-weight: 850; letter-spacing: .09em; }
+.lesson-card h3 { margin: .45rem 0; font-family: Georgia, serif; font-size: 1.7rem; font-weight: 500; }
+.lesson-card p { color: var(--muted); }
+.lesson-tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: auto; }
+.tag { padding: .28rem .55rem; background: var(--accent-soft); border-radius: 999px; font-size: .72rem; font-weight: 750; }
+
+.practice-section { background: transparent; }
+.practice-grid { display: grid; grid-template-columns: 1.25fr .75fr .75fr; gap: 1rem; }
+.practice-list { display: grid; gap: .85rem; padding-left: 1.3rem; }
+.practice-list li span { display: block; color: var(--muted); }
+.focus-output {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+  margin: 1rem 0;
+  border: 1px dashed var(--accent);
+  border-radius: 16px;
+  background: var(--accent-soft);
+  font-family: Georgia, serif;
+  font-size: 1.75rem;
+}
+.metronome-readout { display: flex; align-items: baseline; gap: .4rem; margin: 1rem 0; }
+.metronome-readout span { font-family: Georgia, serif; font-size: 3.2rem; }
+.metronome-readout small { color: var(--muted); font-weight: 750; }
+#bpmSlider { width: 100%; margin: .5rem 0 1.25rem; }
+.fine-print { font-size: .85rem; color: var(--muted); }
+
+.theory-map { display: grid; gap: .6rem; }
+.theory-step {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.15rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.theory-index {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: white;
+  border-radius: 50%;
+  font-weight: 850;
+}
+.theory-step p { margin: .2rem 0 0; color: var(--muted); }
+.theory-when { color: var(--accent); font-size: .8rem; font-weight: 850; text-align: right; }
+
+.split-section { display: grid; grid-template-columns: .78fr 1.22fr; gap: 3rem; }
+.search-input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0 1rem;
+  background: var(--surface);
+}
+.vocab-list { display: grid; gap: .6rem; }
+.vocab-item { padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.vocab-item strong { display: block; }
+.vocab-item span { color: var(--muted); }
+
+.resource-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.resource-card ul { padding-left: 1.15rem; color: var(--muted); }
+.ratio { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-top: 1px solid var(--line); font-size: .86rem; }
+.ratio span { color: var(--muted); }
+
+.closing { text-align: center; }
+.closing p:not(.eyebrow) { max-width: 680px; margin: 0 auto 1.6rem; color: var(--muted); }
+footer { padding: 2rem 1.25rem 3rem; text-align: center; color: var(--muted); font-size: .85rem; }
+
+@media (max-width: 900px) {
+  .hero, .section-heading, .intro-grid, .split-section { grid-template-columns: 1fr; }
+  .hero { min-height: auto; padding-top: 4rem; }
+  .lesson-grid, .resource-grid { grid-template-columns: repeat(2, 1fr); }
+  .practice-grid { grid-template-columns: 1fr; }
+  .section-heading { align-items: start; }
 }
 
-/* Styling for buttons */
-button {
-    display: block; /* Block display to occupy the full width */
-    background-color: #007bff; /* Bright blue background */
-    color: #ffffff; /* White text for contrast */
-    padding: 10px 20px; /* Padding inside the button */
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 16px; /* Readable font size */
-    margin-bottom: 20px; /* Space below the button */
+@media (max-width: 680px) {
+  .site-header { align-items: flex-start; flex-wrap: wrap; }
+  .nav-toggle { display: block; }
+  .site-nav { display: none; width: 100%; flex-direction: column; gap: .65rem; padding: .5rem 0; }
+  .site-nav.open { display: flex; }
+  .lesson-grid, .resource-grid, .principle-grid { grid-template-columns: 1fr; }
+  .theory-step { grid-template-columns: 42px 1fr; }
+  .theory-when { grid-column: 2; text-align: left; }
+  h1 { font-size: clamp(3rem, 15vw, 5rem); }
+  .section { padding: 4rem 0; }
 }
-
-/* Hover effect for buttons */
-button:hover {
-    background-color: #0056b3; /* Darker blue on hover for feedback */
-}
-
-/* Container for the music sheet with scrolling */
-.sheet-music-container {
-    max-height: 400px; /* Limit height with overflow to manage long content */
-    overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #ccc; /* Light grey border for definition */
-}
-
-/* General container style for animations */
-#animation-container {
-    width: 1570px;
-    height: 150px;
-    overflow: hidden; /* Hide overflow to manage the inner moving content */
-    border: 4px solid grey; /* Solid grey border for visibility */
-    margin: 10px; /* Margin around the container */
-}
-
-#animation-container > div {
-    width: 10000px; /* Very wide to accommodate moving content */
-    height: 120px;
-    white-space: nowrap; /* Prevent wrapping of content inside */
-}
-
-/* Styling for buttons with class 'animated-button' */
-.animated-button {
-    display: inline-block; /* Change to inline-block to align horizontally */
-    background-color: grey; /* Grey background */
-    color: black; /* Black text for contrast */
-    padding: 10px 20px; /* Padding inside the button */
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 16px; /* Readable font size */
-    margin: 10px; /* Margin around the button for spacing */
-}
-
-/* Hover effect for buttons with class 'animated-button' */
-.animated-button:hover {
-    background-color: darkgrey; /* Darker grey on hover for feedback */
-}
-
-
-
-/* Styling for the controls container */
-#controls {
-    padding: 15px; /* Padding around the buttons for spacing */
-    display: flex; /* Makes child elements (buttons) line up horizontally */
-    flex-wrap: wrap; /* Allows buttons to wrap to next line if space runs out */
-    justify-content: center; /* Center align the buttons horizontally */
-}
-
-/* Styling specifically for buttons inside the #controls */
-#controls > button {
-    margin: 20px; /* Margin around each button for spacing */
-    background-color: lightgrey; /* Grey background for normal state */
-    color: black; /* Black text for contrast */
-    padding: 10px 20px; /* Padding inside the button */
-    border: none; /* No border to keep it clean */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 16px; /* Font size for readability */
-    transition: background-color 0.3s ease; /* Smooth transition for background color change */
-}
-
-/* Hover effect for buttons inside #controls */
-#controls > button:hover {
-    background-color: darkgrey; /* Darker grey on hover for feedback */
-}
-
-
-/* Styling for dynamic movement and interactions */
-.scroll {
-    transition: transform 10s linear, opacity 1s ease-out; /* Smooth transition for transform properties */
-}
-
-.scrolling {
-    transform: translateX(-1540px); /* Horizontal shift */
-}
-
-.correct {
-    transform: translateY(-900px); /* Move up */
-    opacity: 0; /* Fade out */
-    transition: transform 5s, opacity 3s; /* Transition for moving and fading */
-}
-
-.incorrect {
-    transform: translateY(900px); /* Move down */
-    opacity: 0; /* Fade out */
-    transition: transform 2s, opacity 2s; /* Transition for moving and fading */
-}
-
-.too-slow {
-    /* Example CSS for a specific animation case, handle via JS for dynamic values */
-    opacity: 0;
-    transition: transform 3s linear, opacity 3s ease-out; /* Transition for transform and opacity */
-}
-
-/* Specific styling for subtitles within the application */
-.subtitle {
-    font-size: 20px; /* Larger font size for emphasis */
-    color: #666; /* Medium grey for subtle emphasis */
-    font-style: italic; /* Italicized for differentiation */
-    text-align: center; /* Center alignment for visibility */
-}
-
-/* TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING   v   TESTING */
