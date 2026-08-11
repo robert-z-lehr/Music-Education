@@ -1,24 +1,94 @@
-# Access Music Exercises [Here](https://robert-z-lehr.github.io/Music-Education/)
----
+# Piano Studio — Beginner Remote Teaching Companion
 
-### Purpose
-To provide a comprehensive set of music education exericises and theory
----
+This branch contains a lightweight GitHub Pages resource for beginner piano teaching.
 
-### Source:
-- [VexFlow](https://www.vexflow.com/)
-- [EasyScore](https://github.com/0xfe/vexflow/wiki/Using-EasyScore)
-- [VexWarp](https://github.com/0xfe/vexwarp)
----
+## Teaching model
 
-### MIT LICENSE
+The core loop is:
 
-Copyright (c) Mohit Muthanna Cheppudira 2010
-0xFE mohit@muthanna.com https://www.vexflow.com
+**Hear → Imitate → Understand → Read → Explore**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The site intentionally lets beginners make recognizable music before notation becomes a gatekeeper. Reading grows in parallel with ear training and imitation.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+Suggested balance:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
----
+- Lessons 1–2: about 80% ear/imitation, 20% reading
+- Lessons 3–5: about 60% ear/imitation, 40% reading
+- Lessons 6–10: roughly equal balance
+- Later: adapt to the student's goals
+
+## Curriculum arc
+
+1. Make a Melody
+2. Keep the Pulse
+3. Read What You Played
+4. Shape the Sound
+5. Add the Left Hand
+6. Build Chords
+7. Scales Explain Keys
+8. Play from Chord Symbols
+9. Hear Functional Harmony
+10. Use the Circle of Fifths
+11. Modes by Sound
+12. Reharmonize
+
+The later path can branch toward classical repertoire, pop accompaniment, composition, improvisation, jazz, film/game music, or ear playing.
+
+## Practice philosophy
+
+Students are not expected to begin perfectly. They are expected to practice with increasing control.
+
+1. Listen
+2. Simplify
+3. Slow down
+4. Repeat the corrected version
+5. Reconnect the fragment to the music
+
+The site includes a focus generator and metronome to support this process.
+
+## Adding lesson media
+
+Store teacher-created media under `assets/` and use descriptive names such as:
+
+```text
+assets/
+  lesson-01/
+    melody-normal.mp3
+    melody-slow.mp3
+    phrase-01-loop.mp4
+    keyboard-overhead.mp4
+```
+
+Good demonstration sets contain:
+
+- a normal-speed performance
+- a slow version
+- a 2–5 second loop of the difficult fragment
+- an optional overhead keyboard view
+
+See `assets/README.md` for media conventions.
+
+## Just the Facts
+
+This public site should not reproduce scans, photographed pages, answer keys, or substantial copyrighted material from the commercial *Just the Facts* music-theory books without permission.
+
+A clean approach is to:
+
+- treat the books as optional companion workbooks
+- have students obtain lawful copies when assigned
+- reference the relevant book/lesson from this site
+- create original explanations, examples, notation, games, audio, and exercises here
+
+## Files
+
+- `index.html` — student-facing site structure
+- `styles.css` — responsive visual design
+- `script.js` — lesson data, vocabulary, practice interactions, and metronome
+- `TEACHING_GUIDE.md` — suggested remote lesson structure and curriculum notes
+- `assets/README.md` — conventions for recordings and other lesson media
+
+## Branch
+
+Built on:
+
+`agent/beginner-piano-teaching-site`
