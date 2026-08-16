@@ -1,0 +1,67 @@
+.repertoire-header .compact { min-height: 40px; padding: .55rem .85rem; }
+.repertoire-shell { width: min(1180px, calc(100% - 2.5rem)); margin: 0 auto; }
+.repertoire-hero { padding: 4rem 0 2.5rem; }
+.repertoire-hero h1 { max-width: 850px; font-size: clamp(2.8rem, 7vw, 6rem); margin-bottom: 1rem; }
+.text-link { color: var(--accent); font-weight: 800; text-decoration: none; }
+.text-link:hover { text-decoration: underline; }
+.repertoire-workspace { display: grid; grid-template-columns: 270px 1fr; gap: 1rem; align-items: start; padding-bottom: 3rem; }
+.song-tabs { position: sticky; top: 86px; display: grid; gap: .45rem; max-height: calc(100vh - 110px); overflow: auto; padding-right: .2rem; }
+.song-tab { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: .8rem .9rem; color: var(--ink); cursor: pointer; font-weight: 750; }
+.song-tab small { display: block; color: var(--muted); font-weight: 600; margin-top: .15rem; }
+.song-tab.active { background: var(--ink); color: white; border-color: var(--ink); }
+.song-tab.active small { color: #d9d9d9; }
+.score-panel { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 1.35rem; box-shadow: var(--shadow); }
+.score-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+.score-heading h2 { font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: .4rem; }
+.song-note { color: var(--muted); max-width: 720px; }
+.display-controls { display: flex; flex-wrap: wrap; gap: .55rem; padding: 1rem 0 1.2rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.control-chip { display: inline-flex; align-items: center; gap: .42rem; min-height: 42px; padding: .55rem .75rem; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; font-size: .88rem; font-weight: 750; }
+.control-chip input { accent-color: var(--accent); }
+.score-area { min-height: 300px; overflow-x: auto; padding: 1.3rem .25rem .5rem; }
+.score-wrap { min-width: 720px; }
+.score-meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; color: var(--muted); font-size: .9rem; margin-bottom: .65rem; }
+.score-meta strong { color: var(--ink); }
+.note-guide { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .8rem; }
+.note-pill { border: 1px solid var(--line); border-radius: 10px; padding: .42rem .55rem; background: #fff; font-weight: 800; }
+.note-pill .finger { display: block; font-size: .72rem; color: var(--muted); font-weight: 650; }
+.license-panel { min-height: 260px; display: grid; place-items: center; padding: 2rem; border: 1px dashed var(--line); border-radius: 18px; background: #faf8f2; text-align: center; }
+.license-panel div { max-width: 650px; }
+.license-panel h3 { font-family: Georgia, serif; font-size: 1.8rem; margin-bottom: .6rem; }
+.license-panel p { color: var(--muted); }
+.practice-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: .65rem; margin-top: 1rem; }
+.practice-strip div { padding: .85rem; border-radius: 14px; background: var(--accent-soft); }
+.practice-strip strong, .practice-strip span { display: block; }
+.practice-strip span { color: var(--muted); font-size: .82rem; margin-top: .2rem; }
+.copyright-note { margin: 0 0 4rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+.copyright-note p { color: var(--muted); margin-bottom: 0; }
+
+@media (max-width: 850px) {
+  .repertoire-workspace { grid-template-columns: 1fr; }
+  .song-tabs { position: static; display: flex; overflow-x: auto; max-height: none; padding: 0 0 .35rem; scroll-snap-type: x proximity; }
+  .song-tab { flex: 0 0 190px; scroll-snap-align: start; }
+  .practice-strip { grid-template-columns: repeat(2,1fr); }
+  .desktop-back { display: none; }
+}
+
+@media (max-width: 680px) {
+  .repertoire-shell { width: min(100% - 1rem, 1180px); }
+  .repertoire-header { align-items: center; flex-wrap: nowrap; padding: .7rem .75rem; }
+  .repertoire-header .brand span:last-child { display: none; }
+  .repertoire-hero { padding: 2.2rem .15rem 1.25rem; }
+  .repertoire-hero h1 { font-size: clamp(2.45rem, 13vw, 4rem); line-height: .96; }
+  .score-panel { padding: .85rem; border-radius: 18px; }
+  .score-heading h2 { font-size: 2.15rem; }
+  .display-controls { gap: .4rem; }
+  .control-chip { flex: 1 1 calc(50% - .4rem); justify-content: flex-start; border-radius: 12px; min-height: 44px; padding: .55rem .6rem; font-size: .82rem; }
+  .score-area { min-height: 240px; padding-top: .8rem; }
+  .score-wrap { min-width: 620px; }
+  .practice-strip { grid-template-columns: 1fr 1fr; gap: .45rem; }
+  .practice-strip div { padding: .65rem; }
+  .copyright-note { margin-bottom: 2rem; }
+}
+
+@media (max-width: 380px) {
+  .control-chip { flex-basis: 100%; }
+  .practice-strip { grid-template-columns: 1fr; }
+  .song-tab { flex-basis: 165px; padding: .7rem; }
+}
