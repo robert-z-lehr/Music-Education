@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Beginner single-note piano themes with optional learning overlays." />
+  <meta name="description" content="Beginner single-note piano themes with optional learning overlays and a simple score builder." />
   <title>Beginner Melody Library | Piano Studio</title>
   <link rel="stylesheet" href="../styles.css" />
   <link rel="stylesheet" href="repertoire.css" />
@@ -37,7 +37,7 @@
           <a class="text-link desktop-back" href="../index.html">Main lessons →</a>
         </div>
 
-        <div class="display-controls" aria-label="Score display options">
+        <div id="libraryControls" class="display-controls" aria-label="Score display options">
           <label class="control-chip"><input type="checkbox" id="showColors" /> <span>Colored notes</span></label>
           <label class="control-chip"><input type="checkbox" id="showNames" checked /> <span>Note names</span></label>
           <label class="control-chip"><input type="checkbox" id="showFingers" /> <span>Finger numbers</span></label>
@@ -46,9 +46,86 @@
           <label class="control-chip"><input type="checkbox" id="showArticulation" /> <span>Articulation</span></label>
         </div>
 
+        <div id="composerControls" class="composer-controls" hidden>
+          <div class="composer-section">
+            <h3>1. Add notes or rests</h3>
+            <div class="composer-row">
+              <label>Pitch
+                <select id="addPitch">
+                  <option>C4</option><option>D4</option><option>E4</option><option>F4</option><option>G4</option><option>A4</option><option>B4</option>
+                  <option selected>C5</option><option>D5</option><option>E5</option><option>F5</option><option>G5</option><option>A5</option><option>B5</option>
+                </select>
+              </label>
+              <label>Value
+                <select id="addDuration">
+                  <option value="4">Whole</option><option value="2">Half</option><option value="1" selected>Quarter</option><option value="0.5">Eighth</option>
+                </select>
+              </label>
+              <button class="button primary compact" id="addNoteBtn" type="button">+ Note</button>
+              <button class="button secondary compact" id="addRestBtn" type="button">+ Rest</button>
+            </div>
+          </div>
+
+          <div class="composer-section selected-editor" id="selectedEditor">
+            <h3>2. Edit selected symbol</h3>
+            <p class="fine-print" id="selectionHint">Tap a note or rest in your score to edit it.</p>
+            <div id="selectedFields" hidden>
+              <div class="composer-row">
+                <label>Type
+                  <select id="editType"><option value="note">Note</option><option value="rest">Rest</option></select>
+                </label>
+                <label>Pitch
+                  <select id="editPitch">
+                    <option>C4</option><option>D4</option><option>E4</option><option>F4</option><option>G4</option><option>A4</option><option>B4</option>
+                    <option>C5</option><option>D5</option><option>E5</option><option>F5</option><option>G5</option><option>A5</option><option>B5</option>
+                  </select>
+                </label>
+                <label>Value
+                  <select id="editDuration"><option value="4">Whole</option><option value="2">Half</option><option value="1">Quarter</option><option value="0.5">Eighth</option></select>
+                </label>
+                <button class="button secondary compact danger" id="deleteEventBtn" type="button">Delete</button>
+              </div>
+              <div class="composer-row annotations">
+                <label>Dynamic from here
+                  <select id="editDynamic"><option value="">None / remove</option><option>pp</option><option>p</option><option>mp</option><option>mf</option><option>f</option><option>ff</option></select>
+                </label>
+                <label>Articulation
+                  <select id="editArticulation"><option value="">None / remove</option><option value="staccato">Staccato</option><option value="accent">Accent</option><option value="tenuto">Tenuto</option></select>
+                </label>
+                <label>Tempo change here
+                  <input id="editTempo" type="number" min="30" max="240" placeholder="none" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="composer-section">
+            <h3>3. Piece settings</h3>
+            <div class="composer-row">
+              <label>Starting tempo (BPM)<input id="pieceTempo" type="number" min="30" max="240" value="80" /></label>
+              <label>Time signature
+                <span class="time-input"><input id="timeTop" type="number" min="1" max="12" value="4" aria-label="Time signature numerator" /><span>/</span><select id="timeBottom" aria-label="Time signature denominator"><option>2</option><option selected>4</option><option>8</option></select></span>
+              </label>
+              <button class="button primary compact" id="applyTimeBtn" type="button">Apply time signature</button>
+            </div>
+            <p class="fine-print">If a note crosses a barline, it is split and tied automatically. A rest crossing a barline is split into separate rests, because rests are not tied in standard notation.</p>
+          </div>
+
+          <div class="composer-section composer-overlays">
+            <h3>4. Learning overlays</h3>
+            <div class="display-controls inline-controls">
+              <label class="control-chip"><input type="checkbox" id="composerNames" checked /> <span>Note names</span></label>
+              <label class="control-chip"><input type="checkbox" id="composerColors" /> <span>Colored notes</span></label>
+              <label class="control-chip"><input type="checkbox" id="composerDynamics" checked /> <span>Dynamics</span></label>
+              <label class="control-chip"><input type="checkbox" id="composerTempoMarks" checked /> <span>Tempo</span></label>
+              <label class="control-chip"><input type="checkbox" id="composerArticulations" checked /> <span>Articulation</span></label>
+            </div>
+          </div>
+        </div>
+
         <div id="scoreArea" class="score-area" aria-live="polite"></div>
 
-        <div class="practice-strip">
+        <div id="practiceStrip" class="practice-strip">
           <div><strong>1. Hear</strong><span>Listen to the phrase first.</span></div>
           <div><strong>2. Copy</strong><span>Use 2–4 notes at a time.</span></div>
           <div><strong>3. Read</strong><span>Match the keys to the staff.</span></div>
@@ -67,7 +144,6 @@
     <p><a href="../index.html">Piano Studio</a> • Beginner melody library</p>
   </footer>
 
-  <script src="https://unpkg.com/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <script src="repertoire.js"></script>
 </body>
 </html>
