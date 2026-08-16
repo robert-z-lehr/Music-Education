@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Beginner single-note piano themes with optional learning overlays." />
+  <title>Beginner Melody Library | Piano Studio</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="repertoire.css" />
+</head>
+<body>
+  <header class="site-header repertoire-header">
+    <a class="brand" href="../index.html" aria-label="Back to Piano Studio">
+      <span class="brand-mark">♩</span><span>Piano Studio</span>
+    </a>
+    <a class="button secondary compact" href="../index.html">← Main lessons</a>
+  </header>
+
+  <main class="repertoire-shell">
+    <section class="repertoire-hero">
+      <p class="eyebrow">BEGINNER MELODY LIBRARY</p>
+      <h1>Pick a melody.<br />Play one note at a time.</h1>
+      <p class="hero-lead">Short, recognizable phrases for first lessons. Start with the plain score, then turn on only the hints you need.</p>
+      <a class="text-link" href="../index.html">Back to the main Piano Studio →</a>
+    </section>
+
+    <section class="repertoire-workspace" aria-label="Melody library">
+      <nav id="songTabs" class="song-tabs" aria-label="Choose a melody"></nav>
+
+      <article class="score-panel">
+        <div class="score-heading">
+          <div>
+            <p class="eyebrow" id="songCategory">MELODY</p>
+            <h2 id="songTitle">Choose a melody</h2>
+            <p id="songNote" class="song-note"></p>
+          </div>
+          <a class="text-link desktop-back" href="../index.html">Main lessons →</a>
+        </div>
+
+        <div class="display-controls" aria-label="Score display options">
+          <label class="control-chip"><input type="checkbox" id="showColors" /> <span>Colored notes</span></label>
+          <label class="control-chip"><input type="checkbox" id="showNames" checked /> <span>Note names</span></label>
+          <label class="control-chip"><input type="checkbox" id="showFingers" /> <span>Finger numbers</span></label>
+          <label class="control-chip"><input type="checkbox" id="showDynamics" /> <span>Dynamics</span></label>
+          <label class="control-chip"><input type="checkbox" id="showTempo" /> <span>Tempo</span></label>
+          <label class="control-chip"><input type="checkbox" id="showArticulation" /> <span>Articulation</span></label>
+        </div>
+
+        <div id="scoreArea" class="score-area" aria-live="polite"></div>
+
+        <div class="practice-strip">
+          <div><strong>1. Hear</strong><span>Listen to the phrase first.</span></div>
+          <div><strong>2. Copy</strong><span>Use 2–4 notes at a time.</span></div>
+          <div><strong>3. Read</strong><span>Match the keys to the staff.</span></div>
+          <div><strong>4. Remove hints</strong><span>Turn labels off when ready.</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="copyright-note">
+      <h3>About the song list</h3>
+      <p>Public-domain melodies can be displayed directly here. For copyrighted works, the page keeps a ready-to-use tab and learning controls, but the musical excerpt should be added only from material you have permission to publish.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="../index.html">Piano Studio</a> • Beginner melody library</p>
+  </footer>
+
+  <script src="https://unpkg.com/vexflow@4.2.5/build/cjs/vexflow.js"></script>
+  <script src="repertoire.js"></script>
+</body>
+</html>
